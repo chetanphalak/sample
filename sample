@@ -1,0 +1,43 @@
+##THis action is used executes the model and returns the binary classfication.
+
+import numpy as np
+import os
+from numpy import genfromtxt
+from joblib import load
+def main(params):
+    #print(os.listdir('.'))
+    #print(os.getcwd())
+    print("Request recieved with Parameters",params)
+    X=[]
+    list=['Age','Sex','Chest Pain','Rest BPS','Cholestrol','Fasting blood sugar','Rest ECG','Thalach','Excercise angina','Oldpeak','Slope','Flourpsy','Thal']
+    for i in list: #storing the recieved data from get request
+        if i in params:
+            try:
+                #print(i,float(params[i]))
+                X.append(float(params[i]))
+            except Exception as e:
+                print(e)
+                return {"Result":"Incorrect values"}
+    if len(X)!=13:
+        return {"Result":"Not enough parameters"}
+    try: #in MW arch files are stored and deleted, so doing the same here as well.
+        f=open("data.csv","w")
+        np.savetxt("data.csv",X,delimiter =", ", fmt ='% s')
+        f.close()
+        #print("success in saving to file")
+        clf=load('heartmodel.joblib') #loading the model to be executed on data.csv
+    except Exception as e:
+        print(e)
+        return {"Result":"Load fail,file not found"}
+    try:
+        df=genfromtxt("data.csv",delimiter=",")
+        #print("THis is df:",df)
+        X=[df.astype(np.float64)]
+        #print("This is X",X)
+        result=clf.predict(X)[0].astype(int)
+    except Exception as e:
+        print(e)
+        return {"Result":"Prediction error"}
+    print(result)
+    os.remove("data.csv") #returning the data
+    return {"Success":"Yes","Result":str(result)}
