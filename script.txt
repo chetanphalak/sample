@@ -1,0 +1,75 @@
+#This script is used to send multiple request to openwhisk serverr concurrently
+#It uses pythons thread pool to create threads and use them to send request
+import threading
+from concurrent.futures import ThreadPoolExecutor
+import time
+import os
+import sys
+import json
+import time
+import random
+
+lk=""
+through=0 # this variable stores the reponse time accros various request
+
+# this function is responsible to make the request and recieve the output and calculate reponse time
+# it uses os.system to execute the curl command to send he request.
+def threadFunc(dic,n):
+    start=time.perf_counter()
+    global through
+    print("This is thread ",n)
+    command="curl '"+lk+"' -X POST -H \"Content-Type: application/json\" -d"
+    string=json.dumps(dic)
+    #print(type(string),string,"LINK",link)
+    print(command+" '"+string+"'")
+    os.system(command+"' "+string+"'")
+    end=time.perf_counter()
+    through=max(through,end-start)
+    print("in thread",n,end-start)
+    return (end-start)
+
+
+# we recieve the link and number of request as user input which are obtained from argv
+def main(argv):
+    global through
+    through=0
+    global lk
+    #print("THIS IS ARGs",argv)
+    try:
+        lk=str(argv[0])
+    except Exception as e:
+        print(e)
+        return
+    nodes=0
+    if len(argv)==1:
+        nodes=10
+    else:
+        nodes=(int)(argv[1])
+    #print("this is nodes:",nodes)
+    ls=[]
+    dic={"Age":"45","Sex":"1","Chest Pain":"3","Rest BPS":"145","Cholestrol":"233","Fasting blood sugar":"1","Rest ECG":"0","Thalach":"150","Excercise angina":"0","Oldpeak":"2.3","Slope":"0","Flourpsy":"0","Thal":"1"}
+    for i in range(nodes-1): # here just randomizing the data
+        temp=dic.copy()
+        for keys in temp.keys():
+            if keys=="Sex":
+                temp[keys]=(str)((int)(temp[keys])^1)
+            else:
+                temp[keys]=(str)(random.randrange(1,250,50))
+        ls.append(temp)
+    #print(len(ls),ls)
+    result=[]
+    count=[]
+    for i in range(2,nodes+1): # calling threads here
+        count.append(i)
+    with ThreadPoolExecutor(max_workers=nodes) as exe:
+        exe.submit(threadFunc,dic,1)
+        result=exe.map(threadFunc,ls,count)
+    #print("This is it",result)
+    print("Throughput:",through)
+        #print("after thios")
+    #threadFunc(link,1)
+
+if __name__=="__main__":
+    while(True): # this is done to measure cpu and memory utilisation, can be removed 
+        main(sys.argv[1:])
+
