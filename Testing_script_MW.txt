@@ -1,0 +1,73 @@
+#this script is used to test MW arch with concurrent request
+
+import subprocess
+import threading
+from concurrent.futures import ThreadPoolExecutor
+import time
+import os
+import sys
+import json
+import time
+import random
+
+m=0
+
+def main(argv): # we get number of request from user
+    global m
+    try:
+        nodes=(int)(argv[0])
+    except Exception as e:
+        nodes=10
+    result=[]
+    count=[]
+    for i in range(2,nodes+1):
+        count.append(i)
+    with ThreadPoolExecutor(max_workers=nodes) as exe: # using python thread pool to execute concurrent request
+        exe.submit(threadFunc,1)
+        result=exe.map(threadFunc,count)
+    print("This is last result:",m)
+
+#here we used subprocess since we need to use the results obtained from the request.
+def threadFunc(n):
+    global m
+    print("In thread ",n)
+    start=time.perf_counter()
+    #first request used to get the worker ip
+    result=subprocess.run(["curl http://54.254.122.243/HealthFog/arbiter.php"],shell=True,stdout=subprocess.PIPE)
+    #print(result.stdout)
+    worker_ip=result.stdout.decode('utf-8')
+    worker_ip=worker_ip[1:]
+    print("got worker ip",worker_ip,"for thread: ",n)
+    data=[63,1,3,145,233,1,0,150,0,2.3,0,0,1]
+    string=""
+    #randoming the data
+    for i in range(len(data)):
+        if i==1:
+            data[i]=(str)(data[i]^1)
+        else:
+            data[i]=(str)(random.randrange(1,250,50))
+        string+=(data[i]+',')
+    string=string[:-1]
+    #print("this is it",string)
+    ip="http://"+worker_ip+"/HealthFog/upload.php?data="+string
+    #print("Print here There",ip)
+    #uploading the data to workers node
+    result=subprocess.run(["curl "+ip],shell=True,stdout=subprocess.PIPE)
+    #print("Here")
+    number=result.stdout.decode('utf-8').split("\n")[1]
+    #print("Splitted ",number)
+    #print("THis is uploading",result.stdout.decode('utf-8'))
+    #sending the request to actually execute the job
+    result=subprocess.run(["curl http://"+worker_ip+"/HealthFog/exec.php?data="+number],shell=True,stdout=subprocess.PIPE)
+    print("THis is exec.php:\n","in thread: ",n,"result is:",result.stdout.decode('utf-8'))
+    end=time.perf_counter()
+    #print("THis is thread:",n,"result is:",result.stdout)
+    m=max(m,end-start)
+    #print(result.stdout.decode('utf-8'))
+
+
+if __name__=="__main__":
+    while(True):
+        main(sys.argv[1:])
+    
+
