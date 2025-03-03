@@ -1,43 +1,29 @@
-##THis action is used executes the model and returns the binary classfication.
+Subject: Reminder: Cloud Account Usage and Best Practices
 
-import numpy as np
-import os
-from numpy import genfromtxt
-from joblib import load
-def main(params):
-    #print(os.listdir('.'))
-    #print(os.getcwd())
-    print("Request recieved with Parameters",params)
-    X=[]
-    list=['Age','Sex','Chest Pain','Rest BPS','Cholestrol','Fasting blood sugar','Rest ECG','Thalach','Excercise angina','Oldpeak','Slope','Flourpsy','Thal']
-    for i in list: #storing the recieved data from get request
-        if i in params:
-            try:
-                #print(i,float(params[i]))
-                X.append(float(params[i]))
-            except Exception as e:
-                print(e)
-                return {"Result":"Incorrect values"}
-    if len(X)!=13:
-        return {"Result":"Not enough parameters"}
-    try: #in MW arch files are stored and deleted, so doing the same here as well.
-        f=open("data.csv","w")
-        np.savetxt("data.csv",X,delimiter =", ", fmt ='% s')
-        f.close()
-        #print("success in saving to file")
-        clf=load('heartmodel.joblib') #loading the model to be executed on data.csv
-    except Exception as e:
-        print(e)
-        return {"Result":"Load fail,file not found"}
-    try:
-        df=genfromtxt("data.csv",delimiter=",")
-        #print("THis is df:",df)
-        X=[df.astype(np.float64)]
-        #print("This is X",X)
-        result=clf.predict(X)[0].astype(int)
-    except Exception as e:
-        print(e)
-        return {"Result":"Prediction error"}
-    print(result)
-    os.remove("data.csv") #returning the data
-    return {"Success":"Yes","Result":str(result)}
+Hi Team,
+
+As we kick off the year, let's follow some best practices to manage our cloud accounts effectively. We’re just in the first quarter, and with many more projects ahead, it’s important we use our allocated budgets wisely to ensure smooth operations throughout the year.
+
+I wanted to highlight a few observations regarding our current cloud usage:
+
+For AWS:
+
+    A total of 84 S3 buckets have been created and are currently holding data.
+    There are 77 EC2 instances in total. Please note that even stopped instances incur charges for the associated storage (EBS volumes).
+    147 security groups are active. (This was previously over 300; I have already cleaned up the unused ones.)
+
+For Azure:
+
+    There are only 3 VMs, but they are quite old and continue to incur costs for both disk storage and public IP addresses.
+
+For GCP:
+
+    There is ongoing usage of MemoryStore and Notebooks. I request the respective users to please review and terminate any resources not in use.
+
+Your cooperation in managing these resources efficiently is highly appreciated. Together, we can help keep our cloud costs optimized and sustainable.
+
+Thank you!
+
+Best regards,
+[Your Name]
+Cloud Administrator
