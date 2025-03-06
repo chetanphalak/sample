@@ -1,29 +1,8 @@
-Subject: Reminder: Cloud Account Usage and Best Practices
 
-Hi Team,
-
-As we kick off the year, let's follow some best practices to manage our cloud accounts effectively. We’re just in the first quarter, and with many more projects ahead, it’s important we use our allocated budgets wisely to ensure smooth operations throughout the year.
-
-I wanted to highlight a few observations regarding our current cloud usage:
-
-For AWS:
-
-    A total of 84 S3 buckets have been created and are currently holding data.
-    There are 77 EC2 instances in total. Please note that even stopped instances incur charges for the associated storage (EBS volumes).
-    147 security groups are active. (This was previously over 300; I have already cleaned up the unused ones.)
-
-For Azure:
-
-    There are only 3 VMs, but they are quite old and continue to incur costs for both disk storage and public IP addresses.
-
-For GCP:
-
-    There is ongoing usage of MemoryStore and Notebooks. I request the respective users to please review and terminate any resources not in use.
-
-Your cooperation in managing these resources efficiently is highly appreciated. Together, we can help keep our cloud costs optimized and sustainable.
-
-Thank you!
-
-Best regards,
-[Your Name]
-Cloud Administrator
+Face Value	QR Code	Short URL	PIN	Expiry Date
+250.00		https://txp2.in/v?alias=FSwPT80Cmj8	3832	01/05/2026
+250.00		https://txp2.in/v?alias=GfBJWZnP6z1	1551	01/05/2026
+250.00		https://txp2.in/v?alias=Gq4QyxTH7S8	4742	01/05/2026
+250.00		https://txp2.in/v?alias=BLDrXnNz1A4	3776	01/05/2026
+250.00		https://txp2.in/v?alias=G1jKErTQ2i4	5968	01/05/2026
+250.00		https://txp2.in/v?alias=FvdhhmRcaT5	5797	01/05/2026
